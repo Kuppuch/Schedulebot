@@ -25,6 +25,9 @@ func main() {
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
 
+	msg := tgbotapi.NewMessage(-599240202, "Бот создан при поддержке https://vk.com/vlsu_schedule") // группа -599240202 / я 538632285
+	bot.Send(msg)
+
 	for {
 		lessons := database.GetCurrentLessons()
 		if len(lessons) > 0 {
@@ -32,7 +35,7 @@ func main() {
 				text := fmt.Sprintf("Пара начнётся в течении <b>15 минут</b>. \n" +
 					"Пара: " + v.Name + "\n " +
 					"Ссылка: " + v.Source)
-				msg := tgbotapi.NewMessage(538632285, text) // группа -599240202 / я 538632285
+				msg := tgbotapi.NewMessage(-599240202, text) // группа -599240202 / я 538632285
 				msg.ParseMode = "html"
 				bot.Send(msg)
 			}
