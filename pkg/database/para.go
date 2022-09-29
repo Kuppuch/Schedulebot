@@ -47,6 +47,6 @@ func GetCurrentLessons() []Lesson {
 
 	var lessons []Lesson
 	//DB.Where("(type = ? OR type = ?) AND day = ? AND CAST(start AS time) between CAST(now() AS time) AND addtime(now(), \"0:15:00\")", weektype, "всегда", weekday).Find(&lessons)
-	DB.Where("(type = ? OR type = ?) AND day = ? AND start::time between now()::time AND now()::time + interval '15 minutes'", weektype, "всегда", weekday).Find(&lessons)
+	DB.Where("(type = ? OR type = ?) AND day = ? AND start::time between (now()::time + interval '3 hour') AND (now()::time + interval '15 minutes' + interval '3 hour')", weektype, "всегда", weekday).Find(&lessons)
 	return lessons
 }

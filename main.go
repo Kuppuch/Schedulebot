@@ -2,6 +2,7 @@ package main
 
 import (
 	"Schedulebot/pkg/database"
+	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
 	"time"
@@ -28,8 +29,11 @@ func main() {
 		lessons := database.GetCurrentLessons()
 		if len(lessons) > 0 {
 			for _, v := range lessons {
-				text := "Пара начнётся в течении 15 минут. Пара: " + v.Name + " Ссылка: " + v.Source
+				text := fmt.Sprintf("Пара начнётся в течении <b>15 минут</b>. \n" +
+					"Пара: " + v.Name + "\n " +
+					"Ссылка: " + v.Source)
 				msg := tgbotapi.NewMessage(538632285, text) // группа -599240202 / я 538632285
+				msg.ParseMode = "html"
 				bot.Send(msg)
 			}
 			time.Sleep(15 * time.Minute)

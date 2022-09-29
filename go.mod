@@ -3,8 +3,12 @@ module Schedulebot
 go 1.17
 
 require (
-	github.com/go-sql-driver/mysql v1.6.0 // indirect
-	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1 // indirect
+	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
+	gorm.io/driver/postgres v1.3.10
+	gorm.io/gorm v1.23.10
+)
+
+require (
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.13.0 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
@@ -17,7 +21,4 @@ require (
 	github.com/jinzhu/now v1.1.5 // indirect
 	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa // indirect
 	golang.org/x/text v0.3.7 // indirect
-	gorm.io/driver/mysql v1.3.6 // indirect
-	gorm.io/driver/postgres v1.3.10 // indirect
-	gorm.io/gorm v1.23.10 // indirect
 )
