@@ -81,27 +81,25 @@ func main() {
 
 	for update := range updates {
 		if update.Message != nil {
-			if update.Message.Text != "/today" {
-				continue
-			}
+			if update.Message.Text == "/today" || update.Message.Text == "/today@Schedbotbot" {
+				lessons := database.GetToday()
+				text := ""
 
-			lessons := database.GetToday()
-			text := ""
-
-			for _, v := range lessons {
-				v.Start = v.Start.Add(-3 * time.Hour)
-				t := string(v.Start.AppendFormat([]byte(""), "15:04"))
-				if err != nil {
-					log.Println(err)
+				for _, v := range lessons {
+					v.Start = v.Start.Add(-3 * time.Hour)
+					t := string(v.Start.AppendFormat([]byte(""), "15:04"))
+					if err != nil {
+						log.Println(err)
+					}
+					text += fmt.Sprintf("Пара начнётся в " + t + "\n" +
+						"Пара: " + v.Name + "\n " +
+						"Ссылка: " + v.Source + "\n \n")
 				}
-				text += fmt.Sprintf("Пара начнётся в " + t + "\n" +
-					"Пара: " + v.Name + "\n " +
-					"Ссылка: " + v.Source + "\n \n")
-			}
 
-			msg = tgbotapi.NewMessage(chatID, text)
-			msg.ReplyMarkup = tgbotapi.ReplyKeyboardRemove{RemoveKeyboard: true}
-			bot.Send(msg)
+				msg = tgbotapi.NewMessage(chatID, text)
+				msg.ReplyMarkup = tgbotapi.ReplyKeyboardRemove{RemoveKeyboard: true}
+				bot.Send(msg)
+			}
 		}
 	}
 }
