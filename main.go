@@ -2,6 +2,7 @@ package main
 
 import (
 	"Schedulebot/pkg/database"
+	"flag"
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
@@ -9,6 +10,7 @@ import (
 )
 
 func main() {
+	flag.Parse()
 	err := database.Connect()
 	if err != nil {
 		log.Fatalf("%v", err)
@@ -18,7 +20,8 @@ func main() {
 		log.Panic(err)
 	}
 
-	var chatID int64 = -1001811852540 // группа -1001811852540 / я 538632285
+	//var chatID int64 = -1001811852540 // группа -1001811852540 / я 538632285
+	chatID := *database.NFlag
 
 	bot.Debug = true
 
@@ -31,7 +34,32 @@ func main() {
 	bot.Send(msg)
 
 	go func() {
+		fl := true
 		for {
+			now := time.Now()
+
+			if now.Minute() == 9 && fl {
+				lessons := database.GetToday()
+				text := ""
+
+				for _, v := range lessons {
+					v.Start = v.Start.Add(-3 * time.Hour)
+					t := string(v.Start.AppendFormat([]byte(""), "15:04"))
+					if err != nil {
+						log.Println(err)
+					}
+					text += fmt.Sprintf("Пара начнётся в " + t + "\n" +
+						"Пара: " + v.Name + "\n " +
+						"Ссылка: " + v.Source + "\n \n")
+				}
+				msg = tgbotapi.NewMessage(chatID, text)
+
+				bot.Send(msg)
+				fl = false
+			} else if now.Minute() != 9 && !fl {
+				fl = true
+			}
+
 			lessons := database.GetCurrentLessons()
 			if len(lessons) > 0 {
 				for _, v := range lessons {
@@ -45,22 +73,17 @@ func main() {
 				time.Sleep(15 * time.Minute)
 				continue
 			}
-			time.Sleep(time.Minute)
+			//time.Sleep(time.Minute)
+			time.Sleep(time.Second)
 		}
 	}()
-
 	updates := bot.GetUpdatesChan(u)
 
 	for update := range updates {
 		if update.Message != nil {
-			if update.Message.Text != "Расписание на сегодня" {
+			if update.Message.Text != "/today" {
 				continue
 			}
-			var numericKeyboard = tgbotapi.NewReplyKeyboard(
-				tgbotapi.NewKeyboardButtonRow(
-					tgbotapi.NewKeyboardButton("Расписание на сегодня"),
-				),
-			)
 
 			lessons := database.GetToday()
 			text := ""
@@ -77,8 +100,7 @@ func main() {
 			}
 
 			msg = tgbotapi.NewMessage(chatID, text)
-			msg.ReplyMarkup = numericKeyboard
-
+			msg.ReplyMarkup = tgbotapi.ReplyKeyboardRemove{RemoveKeyboard: true}
 			bot.Send(msg)
 		}
 	}
