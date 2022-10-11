@@ -18,7 +18,7 @@ func main() {
 		log.Panic(err)
 	}
 
-	var chatID int64 = -599240202 // группа -599240202 / я 538632285
+	var chatID int64 = 538632285 // группа -599240202 / я 538632285
 
 	bot.Debug = true
 
