@@ -16,6 +16,21 @@ type Lesson struct {
 }
 
 func GetCurrentLessons() []Lesson {
+	weekday, weektype := getCurrentDay()
+	var lessons []Lesson
+	//DB.Where("(type = ? OR type = ?) AND day = ? AND CAST(start AS time) between CAST(now() AS time) AND addtime(now(), \"0:15:00\")", weektype, "всегда", weekday).Find(&lessons)
+	DB.Where("(type = ? OR type = ?) AND day = ? AND start::time between (now()::time + interval '3 hour') AND (now()::time + interval '15 minutes' + interval '3 hour')", weektype, "всегда", weekday).Find(&lessons)
+	return lessons
+}
+
+func GetToday() []Lesson {
+	weekday, weektype := getCurrentDay()
+	var lessons []Lesson
+	DB.Where("(type = ? OR type = ?) AND day = ?", weektype, "всегда", weekday).Find(&lessons)
+	return lessons
+}
+
+func getCurrentDay() (string, string) {
 	now := time.Now()
 	_, week := now.ISOWeek()
 
@@ -45,8 +60,5 @@ func GetCurrentLessons() []Lesson {
 		weektype = "числитель"
 	}
 
-	var lessons []Lesson
-	//DB.Where("(type = ? OR type = ?) AND day = ? AND CAST(start AS time) between CAST(now() AS time) AND addtime(now(), \"0:15:00\")", weektype, "всегда", weekday).Find(&lessons)
-	DB.Where("(type = ? OR type = ?) AND day = ? AND start::time between (now()::time + interval '3 hour') AND (now()::time + interval '15 minutes' + interval '3 hour')", weektype, "всегда", weekday).Find(&lessons)
-	return lessons
+	return weekday, weektype
 }
