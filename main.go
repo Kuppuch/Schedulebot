@@ -38,7 +38,7 @@ func main() {
 		for {
 			now := time.Now()
 
-			if now.Minute() == 9 && fl {
+			if now.Hour() == 9 && fl {
 				lessons := database.GetToday()
 				text := ""
 
@@ -56,7 +56,7 @@ func main() {
 
 				bot.Send(msg)
 				fl = false
-			} else if now.Minute() != 9 && !fl {
+			} else if now.Hour() != 9 && !fl {
 				fl = true
 			}
 
