@@ -94,7 +94,9 @@ func main() {
 			case "/today@Schedbotbot":
 				sendToday(bot, chatID, update)
 			default:
-				sayAnything(bot, chatID, update)
+				if update.Message.Chat.ID == 538632285 {
+					sayAnything(bot, chatID, update)
+				}
 				break
 			}
 		}
