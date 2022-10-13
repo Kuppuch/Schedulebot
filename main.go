@@ -16,6 +16,7 @@ func main() {
 		log.Fatalf("%v", err)
 	}
 	bot, err := tgbotapi.NewBotAPI("5528467830:AAH-axDRKLG25ECsDF43XGQx5BmdG5nMm1g") // прод
+	//bot, err := tgbotapi.NewBotAPI("1314188586:AAFCnzV9HgYLiSA_bnkJBRpNBlIYwZzGjWU") // прод
 	if err != nil {
 		log.Panic(err)
 	}
@@ -31,7 +32,7 @@ func main() {
 	u.Timeout = 60
 
 	msg := tgbotapi.NewMessage(chatID, "Бот создан при поддержке https://vk.com/vlsu_schedule")
-	bot.Send(msg)
+	//bot.Send(msg)
 
 	go func() {
 		fl := true
@@ -81,6 +82,9 @@ func main() {
 
 	date := 0
 	for update := range updates {
+		if update.Message == nil {
+			continue
+		}
 		if date == update.Message.Date {
 			continue
 		} else {
