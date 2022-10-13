@@ -15,7 +15,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
-	bot, err := tgbotapi.NewBotAPI("5528467830:AAH-axDRKLG25ECsDF43XGQx5BmdG5nMm1g")
+	bot, err := tgbotapi.NewBotAPI("5528467830:AAH-axDRKLG25ECsDF43XGQx5BmdG5nMm1g") // прод
 	if err != nil {
 		log.Panic(err)
 	}
@@ -79,27 +79,47 @@ func main() {
 	}()
 	updates := bot.GetUpdatesChan(u)
 
+	date := 0
 	for update := range updates {
+		if date == update.Message.Date {
+			continue
+		} else {
+			date = update.Message.Date
+		}
 		if update.Message != nil {
-			if update.Message.Text == "/today" || update.Message.Text == "/today@Schedbotbot" {
-				lessons := database.GetToday()
-				text := ""
 
-				for _, v := range lessons {
-					v.Start = v.Start.Add(-3 * time.Hour)
-					t := string(v.Start.AppendFormat([]byte(""), "15:04"))
-					if err != nil {
-						log.Println(err)
-					}
-					text += fmt.Sprintf("Пара начнётся в " + t + "\n" +
-						"Пара: " + v.Name + "\n " +
-						"Ссылка: " + v.Source + "\n \n")
-				}
-
-				msg = tgbotapi.NewMessage(chatID, text)
-				msg.ReplyMarkup = tgbotapi.ReplyKeyboardRemove{RemoveKeyboard: true}
-				bot.Send(msg)
+			switch update.Message.Text {
+			case "/today":
+				sendToday(bot, chatID)
+			case "/today@Schedbotbot":
+				sendToday(bot, chatID)
+			default:
+				sayAnything(bot, chatID, update)
+				break
 			}
 		}
 	}
+}
+
+func sendToday(bot *tgbotapi.BotAPI, chatID int64) {
+	lessons := database.GetToday()
+	text := ""
+
+	for _, v := range lessons {
+		v.Start = v.Start.Add(-3 * time.Hour)
+		t := string(v.Start.AppendFormat([]byte(""), "15:04"))
+		text += fmt.Sprintf("Пара начнётся в " + t + "\n" +
+			"Пара: " + v.Name + "\n " +
+			"Ссылка: " + v.Source + "\n \n")
+	}
+
+	msg := tgbotapi.NewMessage(chatID, text)
+	msg.ReplyMarkup = tgbotapi.ReplyKeyboardRemove{RemoveKeyboard: true}
+	bot.Send(msg)
+}
+
+func sayAnything(bot *tgbotapi.BotAPI, chatID int64, update tgbotapi.Update) {
+	msg := tgbotapi.NewMessage(chatID, update.Message.Text)
+	msg.ReplyMarkup = tgbotapi.ReplyKeyboardRemove{RemoveKeyboard: true}
+	bot.Send(msg)
 }
