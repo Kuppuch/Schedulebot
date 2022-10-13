@@ -90,9 +90,9 @@ func main() {
 
 			switch update.Message.Text {
 			case "/today":
-				sendToday(bot, chatID)
+				sendToday(bot, chatID, update)
 			case "/today@Schedbotbot":
-				sendToday(bot, chatID)
+				sendToday(bot, chatID, update)
 			default:
 				sayAnything(bot, chatID, update)
 				break
@@ -101,7 +101,7 @@ func main() {
 	}
 }
 
-func sendToday(bot *tgbotapi.BotAPI, chatID int64) {
+func sendToday(bot *tgbotapi.BotAPI, chatID int64, update tgbotapi.Update) {
 	lessons := database.GetToday()
 	text := ""
 
@@ -113,7 +113,7 @@ func sendToday(bot *tgbotapi.BotAPI, chatID int64) {
 			"Ссылка: " + v.Source + "\n \n")
 	}
 
-	msg := tgbotapi.NewMessage(chatID, text)
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, text)
 	msg.ReplyMarkup = tgbotapi.ReplyKeyboardRemove{RemoveKeyboard: true}
 	bot.Send(msg)
 }
